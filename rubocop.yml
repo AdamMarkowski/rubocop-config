@@ -1,0 +1,178 @@
+require:
+  - rubocop-rspec
+  - rubocop-rails
+
+# Ignore auto-generated files.
+AllCops:
+  TargetRubyVersion: 2.6.5
+  Exclude:
+    - db/migrate/**/*
+    - client/**/*
+    - tmp/**/*
+    - 'db/schema.rb'
+
+Security: { Severity: fatal }
+
+Layout/LineLength:
+  Max: 120
+  Severity: warning
+  Exclude:
+    - db/schema.rb
+
+# It's widely used in whole project
+Style/SymbolArray:
+ Enabled: false
+
+# List of supported envs
+Rails/UnknownEnv:
+  Environments:
+    - development
+    - test
+    - integration
+    - staging
+    - production
+
+# Rubocop forces using parenthesis to pass labmdas as arguments (as in: https://github.com/bbatsov/rubocop/issues/4189).
+# This makes `expect { something }.to change { another }` to be called by the cop, while applying this
+# rule here leads to SyntaxError exception. For the sake of our specs it is turned off,
+# until this Rubocop's matcher is fixed.
+Lint/AmbiguousBlockAssociation:
+  Exclude:
+    - 'spec/**/*.rb'
+
+Lint/UriEscapeUnescape:
+  Exclude:
+    - 'spec/support/shared_examples/email_with_proper_attributes.rb'
+
+# Rubocop complains about the main describe not being a class, in case of rake tasks and acceptance tests this is fine.
+RSpec/DescribeClass:
+  Exclude:
+    - 'spec/lib/tasks/**/*.rb'
+    - 'spec/acceptance/**/*.rb'
+
+# Rubocop complains about our approach on having specs file per rake file
+RSpec/MultipleDescribes:
+  Exclude:
+    - 'spec/lib/tasks/**/*.rb'
+
+# Disabled because of bug, Rubocop is wrongly interpreting shared_examples as same level of context
+# shared_examples' `before` or other hooks are interpreted as duplication of hooks, example of wrong match:
+#
+# context 'something' do
+#   before { puts "asdf" }
+
+#   it_behaves_like 'some cool stuff' do
+#     before { puts 'qwerty' }
+#   end
+# end
+RSpec/ScatteredSetup:
+  Enabled: false
+
+# We enable methods that skips validations in our specs and only in specs
+Rails/SkipsModelValidations:
+  Severity: fatal
+  Exclude:
+    - 'spec/**/*.rb'
+
+Naming/ConstantName:
+  Exclude:
+    - 'config/initializers/create_registry.rb'
+
+# We want to use `scenario`, `background` naming in our feature specs
+RSpec/ExampleWording:
+  Exclude:
+    - 'spec/features/**/*.rb'
+
+# We want to use `scenario`, `background` naming in our feature specs
+Capybara/FeatureMethods:
+  Exclude:
+    - 'spec/features/**/*.rb'
+
+Style/FormatStringToken:
+  EnforcedStyle: template
+
+# We prefer to have open options here
+Style/SafeNavigation: { Enabled: false }
+
+# Trailing spaces are not hurting us
+Style/TrailingCommaInArrayLiteral: { Enabled: false }
+Style/TrailingCommaInHashLiteral: { Enabled: false }
+
+# We don't care about alphabetic order of gems, grouping them into envs is fine for us
+Bundler/OrderedGems: { Enabled: false }
+
+# #update_attributes is fine we shouldn't red-flag it in favor of #update
+Rails/ActiveRecordAliases: { Severity: convention }
+
+# Not needed in Cockpit now
+Style/FrozenStringLiteralComment: { Enabled: false }
+
+# We want our rspecs to be clean and powerful
+RSpec/EmptyLineAfterExampleGroup: { Severity: convention }
+RSpec/EmptyLineAfterFinalLet: { Severity: convention }
+RSpec/EmptyLineAfterSubject: { Severity: convention }
+RSpec/EmptyLineAfterHook: { Severity: convention }
+RSpec/ImplicitSubject: { Severity: convention }
+RSpec/ScatteredLet: { Severity: warning }
+RSpec/ExpectChange: { Enabled: false }
+RSpec/ExampleLength: { Enabled: false }
+RSpec/NestedGroups: { Enabled: false }
+RSpec/NamedSubject: { Enabled: false }
+RSpec/MultipleExpectations: { Enabled: false }
+RSpec/MessageExpectation: { Enabled: false }
+RSpec/MessageChain: { Enabled: false }
+RSpec/MessageSpies: { Enabled: false }
+RSpec/LeadingSubject: { Enabled: false }
+RSpec/NotToNot: { Enabled: false }
+RSpec/ContextWording: { Enabled: false }
+RSpec/AnyInstance: { Severity: refactor }
+RSpec/VerifiedDoubles:
+  Exclude:
+    # Instance_doubles cannot be used in specs for ZendeskGateway since the methods
+    # are injected dynamically.
+    - 'spec/gateways/zendesk_gateway_spec.rb'
+
+# Copied from Feng-Shui
+Metrics/ClassLength:
+  Max: 300
+  Exclude:
+    # ZendeskGateway is a mixture of a thin wrapper around Zendesk API (configuring credentials,
+    # general error handling) and dumping ground for logic related to ticket-claim logic.
+    # This will go away once we drop Zendesk.
+    - 'app/gateways/zendesk_gateway.rb'
+
+Metrics/ModuleLength:
+  Max: 300
+  Exclude:
+    - 'spec/support/helpers/fixture_helpers.rb'
+Metrics/BlockLength: { Enabled: false } # Fails to comply with configuration blocks, eg. RSpec ones
+Metrics/CyclomaticComplexity: { Enabled: false }
+Metrics/AbcSize: { Enabled: false }
+Metrics/PerceivedComplexity: { Enabled: false }
+Metrics/MethodLength:
+  Max: 25
+  Exclude:
+    - 'spec/support/helpers/fixture_helpers.rb'
+
+Layout/FirstArrayElementIndentation: { EnforcedStyle: consistent }
+Layout/FirstHashElementIndentation: { EnforcedStyle: consistent }
+Style/WordArray: { Enabled: false }
+Layout/HashAlignment: { EnforcedHashRocketStyle: key, EnforcedColonStyle: key }
+Style/HashSyntax: { EnforcedStyle: ruby19_no_mixed_keys }
+Layout/MultilineMethodCallIndentation: { EnforcedStyle: indented }
+
+Style/Documentation: { Enabled: false }
+
+Layout/SpaceInsideStringInterpolation: { EnforcedStyle: space, Severity: refactor }
+Style/SingleLineBlockParams: { Enabled: false }
+Lint/SuppressedException: { Enabled: false }
+Naming/BinaryOperatorParameterName: { Enabled: false }
+
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
